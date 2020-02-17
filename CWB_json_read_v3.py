@@ -1,16 +1,14 @@
-
+#!/usr/bin/python
 # coding: utf-8
-
-# In[4]:
-
 
 import requests
 import json
 import os 
+import io
 
-
-# In[15]:
-
+fidName = r'radar_data'
+if not os.path.isdir(fidName):
+	os.mkdir(fidName) 
 
 CWB_URL  = "https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/"
 DATA_ID  = "O-A0059-001"   # 雷達整合回波資料
@@ -30,17 +28,17 @@ radarTime = data['cwbopendata']['dataset']['datasetInfo']['parameterSet']['param
 radarTime = radarTime.replace(":", "")
 
 save_fid = "radar_{}.txt".format(radarTime)
-fidList = os.listdir()
-
+fidList = os.listdir("/home/pi/radarEcho_json/radar_data")
+save_fid = "test"
 if save_fid not in fidList:
-    with io.open(save_fid, "w", encoding = "utf-8") as file:
-        json.dump(data, file, ensure_ascii = False, sort_keys = False, indent=4)
-        
-    statinfo = os.stat(save_fid)
-    fidSize  = statinfo.st_size/1000 # Unit in KB
+	with io.open(fidName + "/" + save_fid, "w", encoding = "utf-8") as file:
+       		file.write(unicode(json.dumps(data, file, ensure_ascii = False, sort_keys = False, indent=4)))
+        	
+	statinfo = os.stat(fidName + "/" + save_fid)
+	fidSize  = statinfo.st_size/1000 # Unit in KB
     
-    if fidSize < 10:
-        os.remove(save_fid)    
+   	if fidSize < 10:
+        	os.remove(save_fid)
 else:
     print("The file is exist.")
 
